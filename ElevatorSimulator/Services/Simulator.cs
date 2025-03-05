@@ -1,31 +1,29 @@
-﻿using ElevatorSimulator.Models;
-
-namespace ElevatorSimulator.Services
+﻿namespace ElevatorSimulator.Services
 {
     internal interface ISimulator
     {
-        void Run(string[] args);
+        void Run(int numberOfFloors, int numberOfElevators, bool isTestRun = false);
     }
 
     internal class Simulator : ISimulator
     {
-        private Building _building;
+        private readonly IBuildingService _building;
 
-        public void Run(string[] args)
+        public Simulator(IBuildingService building)
+        {
+            _building = building;
+        }
+
+        public void Run(int numberOfFloors, int numberOfElevators, bool isTestRun = false)
         {
             var running = true;
-
-            var numberOfFloors = int.Parse(args.FirstOrDefault(a => a.StartsWith('b'))?.Substring(1) ?? "5");
-            var numberOfElevators = int.Parse(args.FirstOrDefault(a => a.StartsWith('e'))?.Substring(1) ?? "5");
-
-            _building = Building.Create(numberOfFloors, numberOfElevators);
 
             Console.WriteLine("Welcome to my elevator simulator!");
             Console.WriteLine($"We're starting the simulation with {numberOfFloors} floors and {numberOfElevators} elevators");
 
             while (running)
             {
-                if (args.Contains("TestRun"))
+                if (isTestRun)
                 {
                     break;
                 }
