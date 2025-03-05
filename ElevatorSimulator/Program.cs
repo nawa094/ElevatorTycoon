@@ -1,6 +1,8 @@
-﻿using ElevatorSimulator.Services;
+﻿using ElevatorSimulator.Presentation;
+using ElevatorSimulator.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Spectre.Console;
 
 namespace ElevatorSimulator
 {
@@ -8,20 +10,30 @@ namespace ElevatorSimulator
     {
         static void Main(string[] args)
         {
-            var numberOfFloors = int.Parse(args.FirstOrDefault(a => a.StartsWith('b'))?.Substring(1) ?? "5");
-            var numberOfElevators = int.Parse(args.FirstOrDefault(a => a.StartsWith('e'))?.Substring(1) ?? "5");
+            ElevatorTycoonUI.Welcome();
+
+            int numberOfFloors = AnsiConsole.Prompt(new TextPrompt<int>(Prompt.NumberOfFloors).Validate(Validation.NumberOfFloors));
+            int numberOfElevators = AnsiConsole.Prompt(new TextPrompt<int>(Prompt.NumberOfElevators).Validate(Validation.NumberOfElevators));
 
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddSingleton<ISimulator, Simulator>(); // main entry-point class
-                    services.AddTransient<IBuildingService, BuildingService>();
                     services.AddTransient<IElevatorService, ElevatorService>();
+                    services.AddTransient<IBuildingService, BuildingService>(seriveProvider =>
+                    {
+                        var elevatorService = seriveProvider.GetRequiredService<IElevatorService>();
+                        return new BuildingService(elevatorService, numberOfFloors);
+                    });
+                    services.AddSingleton<ISimulator, Simulator>(serviceProvider =>
+                    {
+                        var buildingService = serviceProvider.GetRequiredService<IBuildingService>();
+                        return new Simulator(buildingService, numberOfFloors);
+                    }); // main entry-point class
                 })
                 .Build();
 
             var game = host.Services.GetRequiredService<ISimulator>();
-            game!.Run(numberOfFloors, numberOfElevators);
+            game!.Run(numberOfElevators);
         }
     }
 }

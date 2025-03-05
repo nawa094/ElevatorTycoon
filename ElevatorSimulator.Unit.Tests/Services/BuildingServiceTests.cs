@@ -22,12 +22,13 @@ namespace ElevatorSimulator.Unit.Tests.Services
         {
             // Arrange
             var elevatorService = A.Fake<IElevatorService>();
-            var fromFloor = _faker.Random.Number();
-            var toFloor = _faker.Random.Number();
+            var numberOfFloors = 10;
+            var fromFloor = _faker.Random.Number(min: 0);
+            var toFloor = _faker.Random.Number(max: numberOfFloors);
 
             A.CallTo(() => elevatorService.PickUpPassanger(A<int>.Ignored, A<IEnumerable<Passanger>>.Ignored)).Returns(Task.CompletedTask);
 
-            var sut = new BuildingService(elevatorService);
+            var sut = new BuildingService(elevatorService, numberOfFloors);
 
             // Act & Assert
             Should.NotThrow(() => sut.PickUpPassangers(fromFloor, toFloor));
@@ -39,10 +40,11 @@ namespace ElevatorSimulator.Unit.Tests.Services
             // Arrange
             var elevatorService = A.Fake<IElevatorService>();
             var passangerElevator = new PassangerElevator();
+            var numberOfFloors = 10;
 
             A.CallTo(() => elevatorService.GetElevators()).Returns([passangerElevator]);
 
-            var sut = new BuildingService(elevatorService);
+            var sut = new BuildingService(elevatorService, numberOfFloors);
             var expectedStatuses = (new List<Status>() { passangerElevator.ToStatus() }).AsReadOnly();
 
             // Act

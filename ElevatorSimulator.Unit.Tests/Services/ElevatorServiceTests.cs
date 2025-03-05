@@ -14,7 +14,7 @@ namespace ElevatorSimulator.Unit.Tests.Services
         {
             // Arrange
             var sut = new ElevatorService();
-            sut.AddElevator(new PassangerElevator());
+            sut.AddElevator(new PassangerElevator(false));
 
             // Act
             var elevators = sut.GetElevators();
@@ -34,7 +34,7 @@ namespace ElevatorSimulator.Unit.Tests.Services
             var passangerFaker = new Faker<Passanger>();
             var passangers = passangerFaker.Generate(2);
 
-            sut.AddElevator(new PassangerElevator());
+            sut.AddElevator(new PassangerElevator(false));
 
             // Act & Assert
             await Should.NotThrowAsync(async () => await sut.PickUpPassanger(10, passangers));
@@ -47,19 +47,19 @@ namespace ElevatorSimulator.Unit.Tests.Services
             var sut = new ElevatorService();
             var pickUpFloor = 10;
 
-            var expectedElevator = new PassangerElevator()
+            var expectedElevator = new PassangerElevator(false)
             {
                 CurrentFloor = 8,
                 Direction = Direction.Stationary
             };
 
-            var dummyElevator = new PassangerElevator()
+            var dummyElevator = new PassangerElevator(false)
             {
                 CurrentFloor = 1,
                 Direction = Direction.Stationary
             };
 
-            var anotherDummyElevator = new PassangerElevator()
+            var anotherDummyElevator = new PassangerElevator(false)
             {
                 CurrentFloor = 9,
                 Direction = Direction.Up

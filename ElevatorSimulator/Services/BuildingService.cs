@@ -16,10 +16,12 @@ namespace ElevatorSimulator.Services
     public class BuildingService : IBuildingService
     {
         private readonly IElevatorService _elevatorService;
+        private int _floors;
 
-        public BuildingService(IElevatorService service)
+        public BuildingService(IElevatorService service, int numberOfFloors)
         {
             _elevatorService = service;
+            _floors = numberOfFloors;
         }
 
         public void PickUpPassangers(int fromFloor, int toFloor, int passangerCount = 1)
@@ -41,6 +43,11 @@ namespace ElevatorSimulator.Services
             var passangerElevators = Enumerable.Range(0, numberOfElevators).Select(i => new PassangerElevator());
 
             _elevatorService.AddElevators(passangerElevators);
+        }
+
+        public void SetNumberOfFloors()
+        {
+
         }
     }
 }

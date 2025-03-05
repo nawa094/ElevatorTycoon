@@ -1,27 +1,29 @@
-﻿namespace ElevatorSimulator.Services
+﻿using ElevatorSimulator.Presentation;
+using Spectre.Console;
+
+namespace ElevatorSimulator.Services
 {
     internal interface ISimulator
     {
-        void Run(int numberOfFloors, int numberOfElevators, bool isTestRun = false);
+        void Run(int numberOfElevators, bool isTestRun = false);
     }
 
     internal class Simulator : ISimulator
     {
         private readonly IBuildingService _building;
+        private readonly int _floors = 0;
 
-        public Simulator(IBuildingService building)
+        public Simulator(IBuildingService building, int numberOfFloors)
         {
             _building = building;
+            _floors = numberOfFloors;
         }
 
-        public void Run(int numberOfFloors, int numberOfElevators, bool isTestRun = false)
+        public void Run(int numberOfElevators, bool isTestRun = false)
         {
-            var running = true;
-
-            Console.WriteLine("Welcome to my elevator simulator!");
-            Console.WriteLine($"We're starting the simulation with {numberOfFloors} floors and {numberOfElevators} elevators");
-
             _building.AddElevators(numberOfElevators);
+
+            var running = true;
 
             while (running && !isTestRun)
             {
@@ -33,30 +35,21 @@
 
         private void Prompt(ref bool running)
         {
-            var prompt = $"------------ Commands -----------------\n\t\t C - call elevator\n\t\t S - Get elevator statuses\n\t\t Q - Quite";
+            ElevatorTycoonUI.GameMenu();
 
-            Console.WriteLine(prompt);
+            var choice = AnsiConsole.Ask<string>(Presentation.Prompt.GameMenuOptions).ToLowerInvariant();
 
-            var input = Console.ReadLine();
-
-            if (!string.IsNullOrEmpty(input))
+            switch (choice)
             {
-                switch (input.ToLowerInvariant())
-                {
-                    case "c":
-                        CallElevator();
-                        break;
-                    case "s":
-                        GetElevatorStatuses();
-                        break;
-                    case "q":
-                        running = false;
-                        break;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Error - That's not a recognized command. Try again.");
+                case "c":
+                    CallElevator();
+                    break;
+                case "s":
+                    GetElevatorStatuses();
+                    break;
+                case "q":
+                    running = false;
+                    break;
             }
         }
 
@@ -64,28 +57,25 @@
         {
             var elevatorStatuses = _building.GetElevatorStatuses();
 
-            foreach (var item in elevatorStatuses)
-            {
-                Console.WriteLine($"Elevator Id: {item.Id} - Current Floor: {item.CurrentFloor} - Direction: {item.Direction} - Number of Passangers: {item.NumberOfPassangers}");
-            }
+            ElevatorTycoonUI.ElevatorStatuses(elevatorStatuses); 
         }
 
         private void CallElevator()
         {
-            Console.WriteLine("What floor are you on?");
-            var fromFloorInput = Console.ReadLine();
+            var fromFloor = AnsiConsole.Prompt(new TextPrompt<int>(Presentation.Prompt.WhatFloorAreYouOn).Validate((n) =>
+            {
+                return Validation.WhatFloorAreYouOn(n, _floors);
+            }));
 
-            int.TryParse(fromFloorInput, out int fromFloor);
+            var toFloor = AnsiConsole.Prompt(new TextPrompt<int>(Presentation.Prompt.WhatFloorAreYouGoingTo).Validate((n) =>
+            {
+                return Validation.WhatFloorAreYouGoingTo(n, _floors);
+            }));
 
-            Console.WriteLine("What floor are you going to?");
-            var toFloorInput = Console.ReadLine();
-
-            int.TryParse(toFloorInput, out int toFloor);
-
-            Console.WriteLine("How many passanger are there?");
-            var numberOfPassangersInput = Console.ReadLine();
-
-            int.TryParse(numberOfPassangersInput, out int numberOfPassangers);
+            var numberOfPassangers = AnsiConsole.Prompt(new TextPrompt<int>(Presentation.Prompt.HowManyPassangers).Validate((n) =>
+            {
+                return Validation.HowManyPassangers(n, 13);
+            }));
 
             _building.PickUpPassangers(fromFloor, toFloor, numberOfPassangers);
         }
