@@ -1,4 +1,5 @@
 ﻿using ElevatorSimulator.Mappers;
+using ElevatorSimulator.Models;
 using ElevatorSimulator.Models.Elevators;
 
 namespace ElevatorSimulator.Services
@@ -23,7 +24,9 @@ namespace ElevatorSimulator.Services
 
         public void PickUpPassangers(int fromFloor, int toFloor, int passangerCount = 1)
         {
-            Task.Run(() => _elevatorService.PickUpPassanger(fromFloor, [new() { DestinationFloor = toFloor, Id = 1 }]));
+            var passangers = Enumerable.Range(0, passangerCount).Select(i => new Passanger { Id = i, DestinationFloor = toFloor });
+
+            Task.Run(() => _elevatorService.PickUpPassanger(fromFloor, passangers));
         }
 
         public IReadOnlyCollection<Status> GetElevatorStatuses() 

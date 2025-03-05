@@ -7,5 +7,7 @@
         public string Direction { get; set; }
 
         public int CurrentFloor { get; set; }
+
+        public int NumberOfPassangers { get; set; }
     }
 }

@@ -51,7 +51,7 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
 
             // Act & Assert
             await Should.NotThrowAsync(async () => await sut.LoadPassangers(passangerCount));
-            sut.PassangerCount.ShouldBe(passangerCount);
+            sut.NumberOfPassangers.ShouldBe(passangerCount);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
             // Act & Assert
             await Should.NotThrowAsync(async () => await sut.UnloadPassangers(passangerCount));
 
-            sut.PassangerCount.ShouldBe(0);
+            sut.NumberOfPassangers.ShouldBe(0);
         }
     }
 }

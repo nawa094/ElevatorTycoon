@@ -10,7 +10,7 @@ namespace ElevatorSimulator.Models.Elevators
 
         public int CurrentFloor { get; set; }
 
-        public int Capacity { get; set; }
+        public int NumberOfPassangers { get; set; }
 
         Task MoveToFloor(int floor);
 

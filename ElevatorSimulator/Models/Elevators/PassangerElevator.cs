@@ -9,7 +9,7 @@ namespace ElevatorSimulator.Models.Elevators
             Id = Guid.NewGuid();
             Direction = Direction.Stationary;
             CurrentFloor = 0;
-            Capacity = 13;
+            NumberOfPassangers = 0;
         }
 
         public Guid Id { get; set; }
@@ -18,22 +18,20 @@ namespace ElevatorSimulator.Models.Elevators
 
         public int CurrentFloor { get; set; }
 
-        public int PassangerCount { get; set; }
-
-        public int Capacity { get; set; }
+        public int NumberOfPassangers { get; set; }
 
         public async Task UnloadPassangers(int passagerCount)
         {
             await Task.Delay(500); // Simulate offboarding passangers
 
-            PassangerCount -= passagerCount;
+            NumberOfPassangers -= passagerCount;
         }
 
         public async Task LoadPassangers(int passangerCount)
         {
             await Task.Delay(500); // Simulate onboarding passangers
 
-            PassangerCount += passangerCount;
+            NumberOfPassangers += passangerCount;
         }
 
         public async Task MoveToFloor(int floor)

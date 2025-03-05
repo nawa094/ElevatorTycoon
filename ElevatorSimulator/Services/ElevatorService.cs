@@ -30,11 +30,8 @@ namespace ElevatorSimulator.Services
             await elevator.MoveToFloor(fromFloor);
             await elevator.LoadPassangers(passangers.Count());
 
-            foreach (var p in passangers)
-            {
-                await elevator.MoveToFloor(p.DestinationFloor);
-                await elevator.UnloadPassangers(1);
-            }
+            await elevator.MoveToFloor(passangers.First().DestinationFloor);
+            await elevator.UnloadPassangers(passangers.Count());
         }
 
         public void AddElevators<T>(IEnumerable<T> elevators) where T : IElevator

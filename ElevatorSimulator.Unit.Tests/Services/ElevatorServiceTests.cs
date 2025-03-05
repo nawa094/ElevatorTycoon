@@ -22,7 +22,7 @@ namespace ElevatorSimulator.Unit.Tests.Services
             // Assert
             elevators.Count.ShouldBe(1);
             elevators.ShouldAllBe(e => e.CurrentFloor == 0);
-            elevators.ShouldAllBe(e => e.Capacity > 0);
+            elevators.ShouldAllBe(e => e.NumberOfPassangers > 0);
         }
 
         [Fact]

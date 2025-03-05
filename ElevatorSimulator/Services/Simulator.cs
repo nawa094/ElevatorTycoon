@@ -66,19 +66,28 @@
 
             foreach (var item in elevatorStatuses)
             {
-                Console.WriteLine($"Elevator Id: {item.Id} - Current Floor: {item.CurrentFloor} - Direction: {item.Direction}");
+                Console.WriteLine($"Elevator Id: {item.Id} - Current Floor: {item.CurrentFloor} - Direction: {item.Direction} - Number of Passangers: {item.NumberOfPassangers}");
             }
         }
 
         private void CallElevator()
         {
             Console.WriteLine("What floor are you on?");
-            var fromFloor = int.Parse(Console.ReadLine());
+            var fromFloorInput = Console.ReadLine();
+
+            int.TryParse(fromFloorInput, out int fromFloor);
 
             Console.WriteLine("What floor are you going to?");
-            var toFloor = int.Parse(Console.ReadLine());
+            var toFloorInput = Console.ReadLine();
 
-            _building.PickUpPassangers(fromFloor, toFloor);
+            int.TryParse(toFloorInput, out int toFloor);
+
+            Console.WriteLine("How many passanger are there?");
+            var numberOfPassangersInput = Console.ReadLine();
+
+            int.TryParse(numberOfPassangersInput, out int numberOfPassangers);
+
+            _building.PickUpPassangers(fromFloor, toFloor, numberOfPassangers);
         }
     }
 }
