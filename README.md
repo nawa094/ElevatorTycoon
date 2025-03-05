@@ -19,7 +19,7 @@ Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a
 
    ```bash
    git clone https://github.com/nawa094/ElevatorTycoon
-   cd elevator-tycoon
+   cd ElevatorTycoon
    ```
 
 2. Restore the dependencies:
@@ -52,7 +52,6 @@ Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a
 
 ### Commands
 
-- **Add Elevators**: Add one or more elevators to the simulation.
 - **Pick Up Passengers**: Simulate passengers requesting elevators from specific floors.
 - **View Elevator Status**: Check the current status of all elevators (floor, direction, and passenger count).
 
@@ -62,7 +61,7 @@ Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a
 
 ### Technologies Used
 
-- **.NET 6**: The application is built using the latest .NET SDK.
+- **.NET 8**: The application is built using the latest .NET SDK.
 - **Spectre.Console**: Handles all UI concerns, including display and prompts.
 - **xUnit**: Used for writing unit tests.
 - **Bogus**: Generates fake data for testing.
@@ -100,21 +99,53 @@ dotnet test
 
 ## 📂 Project Structure
 
+ElevatorSimulator (Main Project)
+
 ```
-elevator-tycoon/
-├── ElevatorSimulator/          # Main console application
-│   ├── Program.cs              # Entry point for the application
-│   ├── Models/                 # Contains Elevator, Passenger, and other models
-│   ├── Services/               # Contains ElevatorService and other services
-│   └── Utils/                  # Helper classes and extensions
-├── ElevatorSimulator.Tests/    # Unit tests for the application
-│   ├── ElevatorTests.cs        # Tests for Elevator behavior
-│   ├── ElevatorServiceTests.cs # Tests for ElevatorService logic
-│   └── ...                     # Additional test files
-├── .github/workflows/          # GitHub Actions workflow files
-│   └── dotnet.yml              # CI/CD pipeline configuration
-└── README.md                   # This file
+ElevatorSimulator/
+├── Program.cs                  # Entry point for the application
+├── Enums/                      # Contains enums (e.g., Direction)
+├── Mappers/                    # Contains mapping logic (if applicable)
+├── Models/                     # Contains Elevator, Passenger, and other models
+├── Presentation/               # Contains UI-related classes (e.g., menus, prompts)
+└── Services/                   # Contains ElevatorService and other services
 ```
+
+ElevatorSimulator.Tests (Test Project)
+
+```
+ElevatorSimulator.Tests/
+├── Enums/                      # Tests for enums
+├── Mappers/                    # Tests for mapping logic
+├── Models/                     # Tests for Elevator, Passenger, and other models
+├── Presentation/               # Tests for UI-related classes
+└── Services/                   # Tests for ElevatorService and other services
+```
+
+## Assumptions
+
+1. **Passengers are all going to the same destination**:
+
+   - All passengers in a single pickup request share the same destination floor. This simplifies the destination queuing logic and ensures that the elevator only needs to make one stop for the entire group.
+
+2. **Elevators have a fixed maximum capacity**:
+
+   - Each elevator can carry a maximum number of passengers, defined by its `Capacity` property. Passengers are only assigned to elevators with sufficient space.
+
+3. **Elevators prioritize stationary and same-direction requests**:
+
+   - The system first looks for stationary elevators. If none are available, it looks for elevators moving in the same direction as the passenger's request.
+
+4. **Real-time updates are displayed using Spectre.Console**:
+
+   - The UI is handled by Spectre.Console, providing a clean and interactive console experience.
+
+5. **Asynchronous processing with `Channel<T>`**:
+
+   - Elevators process destinations asynchronously using `Channel<T>`, ensuring efficient and thread-safe task queuing.
+
+6. **Unit tests cover core functionality**:
+   - The application includes comprehensive unit tests using xUnit, Shouldly, Bogus, and FakeItEasy to ensure reliability and correctness.
 
 ---
 
