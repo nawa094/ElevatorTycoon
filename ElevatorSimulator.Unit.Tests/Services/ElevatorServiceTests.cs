@@ -3,6 +3,7 @@ using ElevatorSimulator.Enums;
 using ElevatorSimulator.Models;
 using ElevatorSimulator.Models.Elevators;
 using ElevatorSimulator.Services;
+using FakeItEasy;
 using Shouldly;
 
 namespace ElevatorSimulator.Unit.Tests.Services
@@ -22,7 +23,7 @@ namespace ElevatorSimulator.Unit.Tests.Services
             // Assert
             elevators.Count.ShouldBe(1);
             elevators.ShouldAllBe(e => e.CurrentFloor == 0);
-            elevators.ShouldAllBe(e => e.NumberOfPassangers == 0);
+            elevators.ShouldAllBe(e => e.NumberOfPassengers == 0);
         }
 
         [Fact]
@@ -30,18 +31,23 @@ namespace ElevatorSimulator.Unit.Tests.Services
         {
             // Arrange
             var sut = new ElevatorService();
+            var faker = new Faker();
 
-            var passangerFaker = new Faker<Passanger>();
+            var fromFloor = faker.Random.Number(min: 0);
+            var toFloor = faker.Random.Number();
+            var passangerCount = faker.Random.Number();
+
+            var passangerFaker = new Faker<Passenger>();
             var passangers = passangerFaker.Generate(2);
 
             sut.AddElevator(new PassangerElevator(false));
 
             // Act & Assert
-            await Should.NotThrowAsync(async () => await sut.PickUpPassanger(10, passangers));
+            await Should.NotThrowAsync(async () => await sut.PickUpPassenger(fromFloor, toFloor, passangerCount));
         }
 
         [Fact]
-        public void GetNearestElevator_ShouldGetTheNearestAvailableElevator()
+        public async Task GetNearestElevator_ShouldGetTheNearestAvailableElevator()
         {
             // Arrange
             var sut = new ElevatorService();
@@ -50,25 +56,28 @@ namespace ElevatorSimulator.Unit.Tests.Services
             var expectedElevator = new PassangerElevator(false)
             {
                 CurrentFloor = 8,
-                Direction = Direction.Stationary
+                Direction = Direction.Stationary,
+                Capacity = 2
             };
 
             var dummyElevator = new PassangerElevator(false)
             {
                 CurrentFloor = 1,
-                Direction = Direction.Stationary
+                Capacity = 2,
+                Direction = Direction.Stationary,
             };
 
             var anotherDummyElevator = new PassangerElevator(false)
             {
                 CurrentFloor = 9,
-                Direction = Direction.Up
+                Direction = Direction.Up,
+                Capacity = 2
             };
 
             sut.AddElevators([expectedElevator, dummyElevator, anotherDummyElevator]);
 
             // Act
-            var actualElevator = sut.GetNearestElevator(pickUpFloor);
+            var actualElevator = await sut.GetNearestElevator(pickUpFloor, Direction.Up, 2);
 
             // Assert
             actualElevator.ShouldBeEquivalentTo(expectedElevator);

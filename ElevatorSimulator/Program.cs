@@ -19,21 +19,20 @@ namespace ElevatorSimulator
                 .ConfigureServices((context, services) =>
                 {
                     services.AddTransient<IElevatorService, ElevatorService>();
-                    services.AddTransient<IBuildingService, BuildingService>(seriveProvider =>
-                    {
-                        var elevatorService = seriveProvider.GetRequiredService<IElevatorService>();
-                        return new BuildingService(elevatorService, numberOfFloors);
-                    });
+                    services.AddTransient<IBuildingService, BuildingService>();
                     services.AddSingleton<ISimulator, Simulator>(serviceProvider =>
                     {
                         var buildingService = serviceProvider.GetRequiredService<IBuildingService>();
+
+                        buildingService.AddElevators(numberOfElevators);
+
                         return new Simulator(buildingService, numberOfFloors);
                     }); // main entry-point class
                 })
                 .Build();
 
             var game = host.Services.GetRequiredService<ISimulator>();
-            game!.Run(numberOfElevators);
+            game!.Run();
         }
     }
 }

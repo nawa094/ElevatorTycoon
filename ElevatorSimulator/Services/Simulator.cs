@@ -1,11 +1,12 @@
-﻿using ElevatorSimulator.Presentation;
+﻿using ElevatorSimulator.Models;
+using ElevatorSimulator.Presentation;
 using Spectre.Console;
 
 namespace ElevatorSimulator.Services
 {
     internal interface ISimulator
     {
-        void Run(int numberOfElevators, bool isTestRun = false);
+        void Run(bool isTestRun = false);
     }
 
     internal class Simulator : ISimulator
@@ -19,10 +20,8 @@ namespace ElevatorSimulator.Services
             _floors = numberOfFloors;
         }
 
-        public void Run(int numberOfElevators, bool isTestRun = false)
+        public void Run(bool isTestRun = false)
         {
-            _building.AddElevators(numberOfElevators);
-
             var running = true;
 
             while (running && !isTestRun)
@@ -53,6 +52,7 @@ namespace ElevatorSimulator.Services
             }
         }
 
+        #region Private Methods
         private void GetElevatorStatuses()
         {
             var elevatorStatuses = _building.GetElevatorStatuses();
@@ -67,17 +67,18 @@ namespace ElevatorSimulator.Services
                 return Validation.WhatFloorAreYouOn(n, _floors);
             }));
 
-            var toFloor = AnsiConsole.Prompt(new TextPrompt<int>(Presentation.Prompt.WhatFloorAreYouGoingTo).Validate((n) =>
-            {
-                return Validation.WhatFloorAreYouGoingTo(n, _floors);
-            }));
-
             var numberOfPassangers = AnsiConsole.Prompt(new TextPrompt<int>(Presentation.Prompt.HowManyPassangers).Validate((n) =>
             {
                 return Validation.HowManyPassangers(n, 13);
             }));
 
+            var toFloor = AnsiConsole.Prompt(new TextPrompt<int>(Presentation.Prompt.WhatFloorAreYouGoingTo).Validate((n) =>
+            {
+                return Validation.WhatFloorAreYouGoingTo(n, _floors);
+            }));
+
             _building.PickUpPassangers(fromFloor, toFloor, numberOfPassangers);
         }
+        #endregion
     }
 }

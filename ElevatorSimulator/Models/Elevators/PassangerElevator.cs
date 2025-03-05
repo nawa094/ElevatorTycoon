@@ -1,4 +1,5 @@
 ﻿using ElevatorSimulator.Enums;
+using System.Threading.Channels;
 
 namespace ElevatorSimulator.Models.Elevators
 {
@@ -9,9 +10,13 @@ namespace ElevatorSimulator.Models.Elevators
             Id = Guid.NewGuid();
             Direction = Direction.Stationary;
             CurrentFloor = 0;
-            NumberOfPassangers = 0;
+            NumberOfPassengers = 0;
 
             _simulateMovement = simulateMovement;
+            Capacity = 13;
+
+            // Start processing destinations in the background
+            _ = ProcessDestinationsAsync(_cts.Token);
         }
 
         public Guid Id { get; set; }
@@ -20,25 +25,34 @@ namespace ElevatorSimulator.Models.Elevators
 
         public int CurrentFloor { get; set; }
 
-        public int NumberOfPassangers { get; set; }
+        public int NumberOfPassengers { get; set; }
+
+        public int Capacity { get; set; }
 
         private bool _simulateMovement = false;
+        private readonly Channel<DestinationDetails> _destinationChannel = Channel.CreateUnbounded<DestinationDetails>();
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
-        public async Task UnloadPassangers(int passagerCount)
+        public bool CanAccommodate(int passengerCount)
+        {
+            return NumberOfPassengers + passengerCount <= Capacity;
+        }
+
+        public async Task UnloadPassengers(int passagerCount)
         {
             await SimulateMovement(500); // Simulate offboarding passangers
 
-            NumberOfPassangers -= passagerCount;
+            NumberOfPassengers -= passagerCount;
         }
 
-        public async Task LoadPassangers(int passangerCount)
+        public async Task LoadPassengers(int passangerCount)
         {
             await SimulateMovement(500); // Simulate onboarding passangers
 
-            NumberOfPassangers += passangerCount;
+            NumberOfPassengers += passangerCount;
         }
 
-        public async Task MoveToFloor(int floor)
+        internal async Task MoveToFloor(int floor)
         {
             if (floor == CurrentFloor)
                 return;
@@ -56,6 +70,34 @@ namespace ElevatorSimulator.Models.Elevators
             }
 
             Direction = Direction.Stationary;
+        }
+
+        public async Task AddDestination(DestinationDetails details)
+        {
+            await _destinationChannel.Writer.WriteAsync(details, _cts.Token);
+        }
+
+        public void Stop()
+        {
+            _cts.Cancel();
+        }
+
+        private async Task ProcessDestinationsAsync(CancellationToken cancellationToken)
+        {
+            await foreach (var details in _destinationChannel.Reader.ReadAllAsync(cancellationToken))
+            {
+                // Move to the destination floor
+                await MoveToFloor(details.Floor);
+
+                if (details.Type == DestinationType.PickUp)
+                {
+                    await LoadPassengers(details.PassangerCount);
+                }
+                else if (details.Type == DestinationType.DropOff)
+                {
+                    await UnloadPassengers(details.PassangerCount);
+                }
+            }
         }
 
         private async Task SimulateMovement(int milliSeconds)

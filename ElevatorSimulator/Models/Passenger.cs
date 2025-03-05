@@ -1,6 +1,6 @@
 ﻿namespace ElevatorSimulator.Models
 {
-    public class Passanger
+    public class Passenger
     {
         public int Id { get; set; }
 

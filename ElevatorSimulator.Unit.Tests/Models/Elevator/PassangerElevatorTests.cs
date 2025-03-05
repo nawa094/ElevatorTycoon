@@ -50,8 +50,8 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
             var passangerCount = _faker.Random.Number();
 
             // Act & Assert
-            await Should.NotThrowAsync(async () => await sut.LoadPassangers(passangerCount));
-            sut.NumberOfPassangers.ShouldBe(passangerCount);
+            await Should.NotThrowAsync(async () => await sut.LoadPassengers(passangerCount));
+            sut.NumberOfPassengers.ShouldBe(passangerCount);
         }
 
         [Fact]
@@ -61,12 +61,12 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
             var sut = new PassangerElevator(false);
             var passangerCount = _faker.Random.Number();
 
-            await sut.LoadPassangers(passangerCount);
+            await sut.LoadPassengers(passangerCount);
 
             // Act & Assert
-            await Should.NotThrowAsync(async () => await sut.UnloadPassangers(passangerCount));
+            await Should.NotThrowAsync(async () => await sut.UnloadPassengers(passangerCount));
 
-            sut.NumberOfPassangers.ShouldBe(0);
+            sut.NumberOfPassengers.ShouldBe(0);
         }
     }
 }

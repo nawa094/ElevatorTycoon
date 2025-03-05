@@ -7,6 +7,8 @@
 
         public const string WhatFloorAreYouOn = "[cyan]What floor are you on?[/]";
         public const string WhatFloorAreYouGoingTo = "[cyan]What floor are you going to?[/]";
+        public static string WhatFloorIsPassangerGoingTo(int passangerNumber) => $"[cyan]What floor is passanger {passangerNumber} going to?[/]";
+
         public const string HowManyPassangers = "[cyan]How many passanger are there?[/]";
 
         public const string GameMenuOptions = "Please choose an option [[C/S/Q]]: ";

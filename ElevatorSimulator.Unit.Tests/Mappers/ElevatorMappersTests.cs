@@ -19,7 +19,7 @@ namespace ElevatorSimulator.Unit.Tests.Mappers
             elevatorStatus.Id.ShouldBe(passangerElevator.Id);
             elevatorStatus.CurrentFloor.ShouldBe(passangerElevator.CurrentFloor);
             elevatorStatus.Direction.ShouldBe(passangerElevator.Direction.ToString());
-            elevatorStatus.NumberOfPassangers.ShouldBe(passangerElevator.NumberOfPassangers);
+            elevatorStatus.NumberOfPassangers.ShouldBe(passangerElevator.NumberOfPassengers);
         }
     }
 }

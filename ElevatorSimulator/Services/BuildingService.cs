@@ -1,4 +1,5 @@
-﻿using ElevatorSimulator.Mappers;
+﻿using ElevatorSimulator.Enums;
+using ElevatorSimulator.Mappers;
 using ElevatorSimulator.Models;
 using ElevatorSimulator.Models.Elevators;
 
@@ -6,7 +7,7 @@ namespace ElevatorSimulator.Services
 {
     public interface IBuildingService
     {
-        void PickUpPassangers(int fromFloor, int toFloor, int passangerCount = 1);
+        void PickUpPassangers(int fromFloor, int toFloor, int passangerCount);
 
         IReadOnlyCollection<Status> GetElevatorStatuses();
 
@@ -16,19 +17,15 @@ namespace ElevatorSimulator.Services
     public class BuildingService : IBuildingService
     {
         private readonly IElevatorService _elevatorService;
-        private int _floors;
 
-        public BuildingService(IElevatorService service, int numberOfFloors)
+        public BuildingService(IElevatorService service)
         {
             _elevatorService = service;
-            _floors = numberOfFloors;
         }
 
-        public void PickUpPassangers(int fromFloor, int toFloor, int passangerCount = 1)
+        public void PickUpPassangers(int fromFloor, int toFloor, int passangerCount)
         {
-            var passangers = Enumerable.Range(0, passangerCount).Select(i => new Passanger { Id = i, DestinationFloor = toFloor });
-
-            Task.Run(() => _elevatorService.PickUpPassanger(fromFloor, passangers));
+            Task.Run(() => _elevatorService.PickUpPassenger(fromFloor, toFloor, passangerCount));
         }
 
         public IReadOnlyCollection<Status> GetElevatorStatuses() 
@@ -43,11 +40,6 @@ namespace ElevatorSimulator.Services
             var passangerElevators = Enumerable.Range(0, numberOfElevators).Select(i => new PassangerElevator());
 
             _elevatorService.AddElevators(passangerElevators);
-        }
-
-        public void SetNumberOfFloors()
-        {
-
         }
     }
 }

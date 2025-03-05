@@ -10,12 +10,18 @@ namespace ElevatorSimulator.Models.Elevators
 
         public int CurrentFloor { get; set; }
 
-        public int NumberOfPassangers { get; set; }
+        public int NumberOfPassengers { get; set; }
 
-        Task MoveToFloor(int floor);
+        public int Capacity { get; set; }
 
-        Task LoadPassangers(int passangerCount);
+        Task LoadPassengers(int passangerCount);
 
-        Task UnloadPassangers(int passagerCount);
+        Task UnloadPassengers(int passagerCount);
+
+        Task AddDestination(DestinationDetails details);
+
+        bool CanAccommodate(int passengerCount);
+
+        void Stop();
     }
 }
