@@ -15,7 +15,7 @@ namespace ElevatorSimulator.Services
 
     public class ElevatorService : IElevatorService
     {
-        private static List<IElevator> _elevators = new();
+        private List<IElevator> _elevators = new();
 
         public IReadOnlyCollection<IElevator> GetElevators()
         {

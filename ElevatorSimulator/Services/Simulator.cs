@@ -23,13 +23,8 @@
 
             _building.AddElevators(numberOfElevators);
 
-            while (running)
+            while (running && !isTestRun)
             {
-                if (isTestRun)
-                {
-                    break;
-                }
-
                 Prompt(ref running);
             }
 
