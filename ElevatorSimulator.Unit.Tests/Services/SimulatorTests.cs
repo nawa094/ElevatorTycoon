@@ -15,9 +15,12 @@ namespace ElevatorSimulator.Unit.Tests.Services
 
             var building = A.Fake<IBuildingService>();
             var sut = new Simulator(building);
+            var numberOfElevators = faker.Random.Number();
 
             // Act & Assert
-            Should.NotThrow(() => sut.Run(faker.Random.Number(), faker.Random.Number(), true));
+            Should.NotThrow(() => sut.Run(faker.Random.Number(), numberOfElevators, true));
+
+            A.CallTo(() => building.AddElevators(numberOfElevators)).MustHaveHappened();
         }
     }
 }
