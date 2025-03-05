@@ -18,7 +18,7 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
         public void Create_ShouldCreatePassangerElevator()
         {
             // Arrange & Act
-            var sut = new PassangerElevator();
+            var sut = new PassangerElevator(false);
 
             // Assert
             sut.ShouldBeAssignableTo<PassangerElevator>();
@@ -32,7 +32,7 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
         public async Task MoveToFloor_ShouldMoveTheElevator(int destinationFloor)
         {
             // Arrange
-            var sut = new PassangerElevator();
+            var sut = new PassangerElevator(false);
 
             // Act
             await sut.MoveToFloor(destinationFloor);
@@ -46,7 +46,7 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
         public async Task LoadPassangers_ShouldNotThrow()
         {
             // Arrange
-            var sut = new PassangerElevator();
+            var sut = new PassangerElevator(false);
             var passangerCount = _faker.Random.Number();
 
             // Act & Assert
@@ -58,7 +58,7 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
         public async Task UnloadPassangers_ShouldNotThrow()
         {
             // Arrange
-            var sut = new PassangerElevator();
+            var sut = new PassangerElevator(false);
             var passangerCount = _faker.Random.Number();
 
             await sut.LoadPassangers(passangerCount);

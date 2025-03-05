@@ -38,14 +38,12 @@ namespace ElevatorSimulator.Unit.Tests.Services
         {
             // Arrange
             var elevatorService = A.Fake<IElevatorService>();
-            var passangerElevatorFaker = new Faker<PassangerElevator>();
+            var passangerElevator = new PassangerElevator();
 
-            var passangerElevators = passangerElevatorFaker.Generate(5);
-
-            A.CallTo(() => elevatorService.GetElevators()).Returns(passangerElevators);
+            A.CallTo(() => elevatorService.GetElevators()).Returns([passangerElevator]);
 
             var sut = new BuildingService(elevatorService);
-            var expectedStatuses = passangerElevators.Select(p => p.ToStatus()).ToList().AsReadOnly();
+            var expectedStatuses = (new List<Status>() { passangerElevator.ToStatus() }).AsReadOnly();
 
             // Act
             var actualStatuses = sut.GetElevatorStatuses();
