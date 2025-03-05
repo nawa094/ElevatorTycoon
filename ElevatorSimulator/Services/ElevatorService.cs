@@ -8,21 +8,18 @@ namespace ElevatorSimulator.Services
     {
         Task PickUpPassanger(int fromFloor, IEnumerable<Passanger> passangers);
 
-        void GetElevatorStatus();
+        IReadOnlyCollection<IElevator> GetElevators();
+        void AddElevators<T>(IEnumerable<T> elevators) where T : IElevator;
+        void AddElevator<T>(T elevator) where T : IElevator;
     }
 
     public class ElevatorService : IElevatorService
     {
         private static List<IElevator> _elevators = new();
 
-        public ElevatorService(int numberOfElevators)
+        public IReadOnlyCollection<IElevator> GetElevators()
         {
-            _elevators.AddRange(Enumerable.Range(0, numberOfElevators).Select(i => PassangerElevator.Create($"E{i}")));
-        }
-
-        public void GetElevatorStatus()
-        {
-            _elevators.ForEach(e => Console.WriteLine($"Elevator Id: {e.Id} - Direction: {e.Direction} - Current Floor: {e.CurrentFloor}"));
+            return _elevators.AsReadOnly();
         }
 
         public async Task PickUpPassanger(int fromFloor, IEnumerable<Passanger> passangers)
@@ -40,7 +37,20 @@ namespace ElevatorSimulator.Services
             }
         }
 
-        private IElevator GetNearestElevator(int floor)
+        public void AddElevators<T>(IEnumerable<T> elevators) where T : IElevator
+        {
+            foreach(var elevator in elevators)
+            {
+                AddElevator(elevator);
+            }
+        }
+
+        public void AddElevator<T>(T elevator) where T : IElevator
+        {
+            _elevators.Add(elevator);
+        }
+
+        internal IElevator GetNearestElevator(int floor)
         {
             return _elevators.Where(e => e.Direction == Direction.Stationary).First();
         }

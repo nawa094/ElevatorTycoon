@@ -21,6 +21,8 @@
             Console.WriteLine("Welcome to my elevator simulator!");
             Console.WriteLine($"We're starting the simulation with {numberOfFloors} floors and {numberOfElevators} elevators");
 
+            _building.AddElevators(numberOfElevators);
+
             while (running)
             {
                 if (isTestRun)
@@ -65,7 +67,12 @@
 
         private void GetElevatorStatuses()
         {
-            _building.GetElevatorStatuses();
+            var elevatorStatuses = _building.GetElevatorStatuses();
+
+            foreach (var item in elevatorStatuses)
+            {
+                Console.WriteLine($"Elevator Id: {item.Id} - Current Floor: {item.CurrentFloor} - Direction: {item.Direction}");
+            }
         }
 
         private void CallElevator()

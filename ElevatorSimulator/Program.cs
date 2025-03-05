@@ -16,7 +16,7 @@ namespace ElevatorSimulator
                 {
                     services.AddSingleton<ISimulator, Simulator>(); // main entry-point class
                     services.AddTransient<IBuildingService, BuildingService>();
-                    services.AddTransient<IElevatorService, ElevatorService>(_ => new ElevatorService(numberOfElevators));
+                    services.AddTransient<IElevatorService, ElevatorService>();
                 })
                 .Build();
 

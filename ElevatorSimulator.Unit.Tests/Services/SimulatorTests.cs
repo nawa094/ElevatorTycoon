@@ -1,4 +1,6 @@
-﻿using ElevatorSimulator.Services;
+﻿using Bogus;
+using ElevatorSimulator.Services;
+using FakeItEasy;
 using Shouldly;
 
 namespace ElevatorSimulator.Unit.Tests.Services
@@ -9,10 +11,13 @@ namespace ElevatorSimulator.Unit.Tests.Services
         public void Run_ShouldNotThrow()
         {
             // Arrange
-            var sut = new Simulator();
+            var faker = new Faker();
+
+            var building = A.Fake<IBuildingService>();
+            var sut = new Simulator(building);
 
             // Act & Assert
-            Should.NotThrow(() => sut.Run(new[] { "TestRun" }));
+            Should.NotThrow(() => sut.Run(faker.Random.Number(), faker.Random.Number(), true));
         }
     }
 }

@@ -4,11 +4,13 @@ namespace ElevatorSimulator.Models.Elevators
 {
     public interface IElevator
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         public Direction Direction { get; set; }
 
         public int CurrentFloor { get; set; }
+
+        public int Capacity { get; set; }
 
         Task MoveToFloor(int floor);
 
