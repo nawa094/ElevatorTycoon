@@ -9,5 +9,7 @@
         public int CurrentFloor { get; set; }
 
         public int NumberOfPassangers { get; set; }
+
+        public string ElevatorType { get; set; }
     }
 }

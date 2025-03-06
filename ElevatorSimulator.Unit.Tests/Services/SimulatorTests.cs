@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using ElevatorSimulator.Presentation;
 using ElevatorSimulator.Services;
 using FakeItEasy;
 using Shouldly;
@@ -14,7 +15,9 @@ namespace ElevatorSimulator.Unit.Tests.Services
             var faker = new Faker();
 
             var building = A.Fake<IBuildingService>();
-            var sut = new Simulator(building, faker.Random.Number());
+            var validator = A.Fake<IInputValidator>();
+
+            var sut = new Simulator(building, validator);
             var numberOfElevators = faker.Random.Number();
 
             // Act & Assert

@@ -1,4 +1,6 @@
-﻿using ElevatorSimulator.Mappers;
+﻿using Bogus;
+using ElevatorSimulator.Enums;
+using ElevatorSimulator.Mappers;
 using ElevatorSimulator.Models.Elevators;
 using Shouldly;
 
@@ -10,7 +12,8 @@ namespace ElevatorSimulator.Unit.Tests.Mappers
         public void ToStatus_ShouldConvertToStatus()
         {
             // Arrange
-            var passangerElevator = new PassangerElevator(false);
+            var faker = new Faker();
+            var passangerElevator = new PassangerElevator(faker.Random.Number(), faker.Random.Number(), ElevatorType.Passenger, false);
 
             // Act
             var elevatorStatus = passangerElevator.ToStatus();

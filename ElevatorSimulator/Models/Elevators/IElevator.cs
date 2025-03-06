@@ -14,6 +14,10 @@ namespace ElevatorSimulator.Models.Elevators
 
         public int Capacity { get; set; }
 
+        public int Speed { get; set; }
+
+        public ElevatorType Type { get; set; }
+
         Task LoadPassengers(int passangerCount);
 
         Task UnloadPassengers(int passagerCount);

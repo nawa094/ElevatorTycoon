@@ -1,6 +1,6 @@
-﻿using ElevatorSimulator.Enums;
+﻿using ElevatorSimulator.Builder;
+using ElevatorSimulator.Enums;
 using ElevatorSimulator.Mappers;
-using ElevatorSimulator.Models;
 using ElevatorSimulator.Models.Elevators;
 
 namespace ElevatorSimulator.Services
@@ -11,16 +11,18 @@ namespace ElevatorSimulator.Services
 
         IReadOnlyCollection<Status> GetElevatorStatuses();
 
-        void AddElevators(int numberOfElevators);
+        void AddElevators(Dictionary<ElevatorType, int> elevatorSelection);
     }
 
     public class BuildingService : IBuildingService
     {
         private readonly IElevatorService _elevatorService;
+        private readonly IElevatorBuilder _builder;
 
-        public BuildingService(IElevatorService service)
+        public BuildingService(IElevatorService service, IElevatorBuilder builder)
         {
             _elevatorService = service;
+            _builder = builder;
         }
 
         public void PickUpPassangers(int fromFloor, int toFloor, int passangerCount)
@@ -35,11 +37,14 @@ namespace ElevatorSimulator.Services
             return elevators.Select(e => e.ToStatus()).ToList().AsReadOnly();
         }
 
-        public void AddElevators(int numberOfElevators)
+        public void AddElevators(Dictionary<ElevatorType, int> elevatorSelection)
         {
-            var passangerElevators = Enumerable.Range(0, numberOfElevators).Select(i => new PassangerElevator());
+            foreach(var selection in elevatorSelection)
+            {
+                var elevators = Enumerable.Range(0, selection.Value).Select(i => _builder.Build(selection.Key));
 
-            _elevatorService.AddElevators(passangerElevators);
+                _elevatorService.AddElevators(elevators);
+            }
         }
     }
 }

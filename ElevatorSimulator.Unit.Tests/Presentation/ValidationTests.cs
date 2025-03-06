@@ -1,4 +1,7 @@
-﻿using ElevatorSimulator.Presentation;
+﻿using ElevatorSimulator.Configuration;
+using ElevatorSimulator.Presentation;
+using FakeItEasy;
+using Microsoft.Extensions.Options;
 using Shouldly;
 
 namespace ElevatorSimulator.Unit.Tests.Presentation
@@ -14,7 +17,8 @@ namespace ElevatorSimulator.Unit.Tests.Presentation
         public void NumberOfFloors_ValidatesCorrectly(int floors, bool expectedIsValid)
         {
             // Act
-            var result = Validation.NumberOfFloors(floors);
+            var options = GetSettings();
+            var result = new Validation(options).NumberOfFloors(floors);
 
             // Assert
             result.Successful.ShouldBe(expectedIsValid);
@@ -27,7 +31,8 @@ namespace ElevatorSimulator.Unit.Tests.Presentation
         public void NumberOfElevators_ValidatesCorrectly(int elevators, bool expectedIsValid)
         {
             // Act
-            var result = Validation.NumberOfElevators(elevators);
+            var options = GetSettings();
+            var result = new Validation(options).NumberOfElevators(elevators);
 
             // Assert
             result.Successful.ShouldBe(expectedIsValid);
@@ -40,7 +45,8 @@ namespace ElevatorSimulator.Unit.Tests.Presentation
         public void WhatFloorAreYouOn_ValidatesCorrectly(int floor, int totalFloors, bool expectedIsValid)
         {
             // Act
-            var result = Validation.WhatFloorAreYouOn(floor, totalFloors);
+            var options = GetSettings();
+            var result = new Validation(options).WhatFloorAreYouOn(floor, totalFloors);
 
             // Assert
             result.Successful.ShouldBe(expectedIsValid);
@@ -53,7 +59,8 @@ namespace ElevatorSimulator.Unit.Tests.Presentation
         public void WhatFloorAreYouGoingTo_ValidatesCorrectly(int floor, int totalFloors, bool expectedIsValid)
         {
             // Act
-            var result = Validation.WhatFloorAreYouGoingTo(floor, totalFloors);
+            var options = GetSettings();
+            var result = new Validation(options).WhatFloorAreYouGoingTo(floor, totalFloors);
 
             // Assert
             result.Successful.ShouldBe(expectedIsValid);
@@ -66,10 +73,39 @@ namespace ElevatorSimulator.Unit.Tests.Presentation
         public void HowManyPassengers_ValidatesCorrectly(int passengers, int maxPassengers, bool expectedIsValid)
         {
             // Act
-            var result = Validation.HowManyPassangers(passengers, maxPassengers);
+            var options = GetSettings();
+            var result = new Validation(options).HowManyPassangers(passengers, maxPassengers);
 
             // Assert
             result.Successful.ShouldBe(expectedIsValid);
+        }
+
+        private IOptions<ElevatorSettings> GetSettings()
+        {
+            var elevatorSettings = new ElevatorSettings
+            {
+                MaxFloors = 163,
+                MaxElevators = 10,
+                ElevatorCapacities = new ElevatorCapacities
+                {
+                    Passenger = 10,
+                    HighSpeed = 8,
+                    Freight = 20
+                },
+                ElevatorSpeeds = new ElevatorSpeeds
+                {
+                    Passenger = 1000,
+                    HighSpeed = 1700,
+                    Freight = 750
+                }
+            };
+
+
+            var options = A.Fake<IOptions<ElevatorSettings>>();
+
+            A.CallTo(() => options.Value).Returns(elevatorSettings);
+
+            return options;
         }
     }
 }

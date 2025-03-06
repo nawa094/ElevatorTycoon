@@ -1,26 +1,60 @@
-﻿using Spectre.Console;
+﻿using ElevatorSimulator.Configuration;
+using Microsoft.Extensions.Options;
+using Spectre.Console;
 
 namespace ElevatorSimulator.Presentation
 {
-    internal static class Validation
+    public interface IInputValidator
     {
-        const int minFloors = 0;
-        const int maxFloors = 163;
+        ValidationResult NumberOfFloors(int n);
 
-        public static ValidationResult NumberOfFloors(int n) => n switch
+        ValidationResult NumberOfElevators(int n);
+
+        ValidationResult WhatFloorAreYouOn(int n, int floors);
+
+        ValidationResult WhatFloorAreYouGoingTo(int n, int floors);
+
+        ValidationResult HowManyPassangers(int n, int maxPassangers);
+    }
+
+    internal class Validation : IInputValidator
+    {
+        private readonly ElevatorSettings _settings;
+
+        public Validation(IOptions<ElevatorSettings> settings)
         {
-            < minFloors => ValidationResult.Error(Prompt.Validation.NumberOfFloorsTooLow),
-            > maxFloors => ValidationResult.Error(Prompt.Validation.NumberOfFloorsTooHigh),
-            _ => ValidationResult.Success()
-        };
+            _settings = settings.Value;
+        }
 
-        public static ValidationResult NumberOfElevators(int n) => n switch
+        public ValidationResult NumberOfFloors(int n)
         {
-            < 0 => ValidationResult.Error(Prompt.Validation.NumberOfElevatorsTooLow),
-            _ => ValidationResult.Success()
-        };
+            if (n < 0)
+            {
+                return ValidationResult.Error(Prompt.Validation.NumberOfFloorsTooLow);
+            }
+            else if (n > _settings.MaxFloors)
+            {
+                return ValidationResult.Error(Prompt.Validation.NumberOfFloorsTooHigh);
+            }
 
-        public static ValidationResult WhatFloorAreYouOn(int n, int floors)
+            return ValidationResult.Success();
+        } 
+
+        public ValidationResult NumberOfElevators(int n)
+        {
+            if (n < 0)
+            {
+                return ValidationResult.Error(Prompt.Validation.NumberOfElevatorsTooLow);
+            }
+            else if (n > _settings.MaxElevators)
+            {
+                return ValidationResult.Error(Prompt.Validation.NumberOfElevatorsTooHigh);
+            }
+
+            return ValidationResult.Success();
+        }
+
+        public ValidationResult WhatFloorAreYouOn(int n, int floors)
         {
             if (n > floors)
             {
@@ -34,7 +68,7 @@ namespace ElevatorSimulator.Presentation
             return ValidationResult.Success();
         }
 
-        public static ValidationResult WhatFloorAreYouGoingTo(int n, int floors)
+        public ValidationResult WhatFloorAreYouGoingTo(int n, int floors)
         {
             if (n > floors)
             {
@@ -48,7 +82,7 @@ namespace ElevatorSimulator.Presentation
             return ValidationResult.Success();
         }
 
-        public static ValidationResult HowManyPassangers(int n, int maxPassangers)
+        public ValidationResult HowManyPassangers(int n, int maxPassangers)
         {
             if (n > maxPassangers)
             {

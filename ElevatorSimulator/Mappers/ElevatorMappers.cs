@@ -10,6 +10,7 @@ namespace ElevatorSimulator.Mappers
             CurrentFloor = elevator.CurrentFloor,
             Direction = elevator.Direction.ToString(),
             NumberOfPassangers = elevator.NumberOfPassengers,
+            ElevatorType = elevator.Type.ToString()
         };
     }
 }

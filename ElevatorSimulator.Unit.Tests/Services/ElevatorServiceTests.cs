@@ -10,12 +10,19 @@ namespace ElevatorSimulator.Unit.Tests.Services
 {
     public class ElevatorServiceTests
     {
+        private readonly Faker _faker = new Faker();
+
+        public ElevatorServiceTests()
+        {
+            _faker.Locale = "en_ZA";
+        }
+
         [Fact]
         public void GetElevators_ShouldReturnElevators()
         {
             // Arrange
             var sut = new ElevatorService();
-            sut.AddElevator(new PassangerElevator(false));
+            sut.AddElevator(new PassangerElevator(_faker.Random.Number(), _faker.Random.Number(), ElevatorType.Passenger, false));
 
             // Act
             var elevators = sut.GetElevators();
@@ -40,7 +47,7 @@ namespace ElevatorSimulator.Unit.Tests.Services
             var passangerFaker = new Faker<Passenger>();
             var passangers = passangerFaker.Generate(2);
 
-            sut.AddElevator(new PassangerElevator(false));
+            sut.AddElevator(new PassangerElevator(_faker.Random.Number(), _faker.Random.Number(), ElevatorType.Passenger, false));
 
             // Act & Assert
             await Should.NotThrowAsync(async () => await sut.PickUpPassenger(fromFloor, toFloor, passangerCount));
@@ -53,21 +60,21 @@ namespace ElevatorSimulator.Unit.Tests.Services
             var sut = new ElevatorService();
             var pickUpFloor = 10;
 
-            var expectedElevator = new PassangerElevator(false)
+            var expectedElevator = new PassangerElevator(_faker.Random.Number(), _faker.Random.Number(), ElevatorType.Passenger, false)
             {
                 CurrentFloor = 8,
                 Direction = Direction.Stationary,
                 Capacity = 2
             };
 
-            var dummyElevator = new PassangerElevator(false)
+            var dummyElevator = new PassangerElevator(_faker.Random.Number(), _faker.Random.Number(), ElevatorType.Passenger, false)
             {
                 CurrentFloor = 1,
                 Capacity = 2,
                 Direction = Direction.Stationary,
             };
 
-            var anotherDummyElevator = new PassangerElevator(false)
+            var anotherDummyElevator = new PassangerElevator(_faker.Random.Number(), _faker.Random.Number(), ElevatorType.Passenger, false)
             {
                 CurrentFloor = 9,
                 Direction = Direction.Up,

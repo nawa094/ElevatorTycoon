@@ -14,6 +14,7 @@ namespace ElevatorSimulator.Presentation
             };
 
             table.AddColumn("Elevator Id");
+            table.AddColumn("Elevator Type");
             table.AddColumn("Current Floor");
             table.AddColumn("Direction");
             table.AddColumn("Number of Passengers");
@@ -32,6 +33,7 @@ namespace ElevatorSimulator.Presentation
                 // Add the row with colored text
                 table.AddRow(
                     new Markup($"[{rowColor}]{item.Id}[/]"),
+                    new Markup($"[{rowColor}]{item.ElevatorType}[/]"),
                     new Markup($"[{rowColor}]{item.CurrentFloor}[/]"),
                     new Markup($"[{rowColor}]{item.Direction}[/]"),
                     new Markup($"[{rowColor}]{item.NumberOfPassangers}[/]")

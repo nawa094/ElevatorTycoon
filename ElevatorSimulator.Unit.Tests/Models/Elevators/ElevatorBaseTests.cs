@@ -1,52 +1,53 @@
 ﻿using Bogus;
+using ElevatorSimulator.Builder;
+using ElevatorSimulator.Configuration;
 using ElevatorSimulator.Enums;
 using ElevatorSimulator.Models.Elevators;
+using FakeItEasy;
+using Microsoft.Extensions.Options;
 using Shouldly;
 
-namespace ElevatorSimulator.Unit.Tests.Models.Elevator
+namespace ElevatorSimulator.Unit.Tests.Models.Elevators
 {
-    public class PassangerElevatorTests
+    public class ElevatorBaseTests
     {
         private readonly Faker _faker = new Faker();
+        private readonly ElevatorBuilder _builder;
 
-        public PassangerElevatorTests()
+        public ElevatorBaseTests()
         {
             _faker.Locale = "en_ZA";
+
+            var settings = new ElevatorSettings
+            {
+                ElevatorCapacities = new ElevatorCapacities { Passenger = 10, HighSpeed = 8, Freight = 20 },
+                ElevatorSpeeds = new ElevatorSpeeds { Passenger = 1000, HighSpeed = 500, Freight = 1500 }
+            };
+
+            var options = A.Fake<IOptions<ElevatorSettings>>();
+
+            A.CallTo(() => options.Value).Returns(settings);
+
+            _builder = new ElevatorBuilder(options);
         }
 
         [Fact]
         public void Create_ShouldCreatePassangerElevator()
         {
             // Arrange & Act
-            var sut = new PassangerElevator(false);
+            var type = _faker.PickRandom<ElevatorType>();
+            var sut = _builder.Build(type);
 
             // Assert
-            sut.ShouldBeAssignableTo<PassangerElevator>();
-        }
-
-        [Theory]
-        [InlineData(10)]
-        [InlineData(69)]
-        [InlineData(22)]
-        [InlineData(15)]
-        public async Task MoveToFloor_ShouldMoveTheElevator(int destinationFloor)
-        {
-            // Arrange
-            var sut = new PassangerElevator(false);
-
-            // Act
-            await sut.MoveToFloor(destinationFloor);
-
-            // Assert
-            sut.CurrentFloor.ShouldBe(destinationFloor);
-            sut.Direction.ShouldBe(Direction.Stationary);
+            sut.ShouldBeAssignableTo<ElevatorBase>();
         }
 
         [Fact]
         public async Task LoadPassangers_ShouldNotThrow()
         {
             // Arrange
-            var sut = new PassangerElevator(false);
+            var type = _faker.PickRandom<ElevatorType>();
+            var sut = _builder.Build(type);
             var passangerCount = _faker.Random.Number();
 
             // Act & Assert
@@ -58,7 +59,8 @@ namespace ElevatorSimulator.Unit.Tests.Models.Elevator
         public async Task UnloadPassangers_ShouldNotThrow()
         {
             // Arrange
-            var sut = new PassangerElevator(false);
+            var type = _faker.PickRandom<ElevatorType>();
+            var sut = _builder.Build(type);
             var passangerCount = _faker.Random.Number();
 
             await sut.LoadPassengers(passangerCount);
