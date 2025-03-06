@@ -2,7 +2,7 @@
 
 [![.NET](https://github.com/nawa094/ElevatorTycoon/actions/workflows/dotnet.yml/badge.svg)](https://github.com/nawa094/ElevatorTycoon/actions/workflows/dotnet.yml)
 
-Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a fleet of elevators to efficiently transport passengers in a high-rise building. This project is designed to simulate real-world elevator behavior, including capacity management, destination queuing, and real-time updates. It’s a fun and educational way to explore asynchronous programming, event-driven design, and unit testing in C#.
+Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a fleet of elevators to efficiently transport passengers in a high-rise building. This project simulates real-world elevator behavior, including capacity management, destination queuing, and real-time updates. It’s a fun and educational way to explore asynchronous programming, event-driven design, configuration management, and unit testing in C#.
 
 ---
 
@@ -45,10 +45,11 @@ Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a
 
 - **Objective**: Manage a fleet of elevators to efficiently transport passengers to their desired floors.
 - **Features**:
-  - Add elevators with custom capacities.
+  - Add elevators with custom capacities and speeds.
   - Simulate passenger pickups and drop-offs.
   - Real-time updates on elevator statuses.
   - Capacity management to prevent overloading.
+  - Configurable building and elevator settings.
 
 ### Commands
 
@@ -63,29 +64,67 @@ Welcome to **Elevator Tycoon**, a .NET C# console application where you manage a
 
 - **.NET 8**: The application is built using the latest .NET SDK.
 - **Spectre.Console**: Handles all UI concerns, including display and prompts.
+- **IOptions Pattern**: Configuration is loaded using `appsettings.json`, allowing users to tweak building and elevator settings.
 - **xUnit**: Used for writing unit tests.
 - **Bogus**: Generates fake data for testing.
 - **Shouldly**: Provides fluent assertions for unit tests.
 - **FakeItEasy**: Used for mocking dependencies in unit tests.
 
-### Key Features
+---
 
-1. **Asynchronous Elevator Management**:
+## ⚙️ Configuration
 
-   - Elevators process destinations asynchronously using `Channel<T>` for efficient task queuing.
-   - Real-time updates are displayed using Spectre.Console.
+The application reads settings from **`appsettings.json`**, which allows you to customize the simulation without modifying code. These settings include:
 
-2. **Capacity Management**:
+```json
+{
+  "ElevatorSettings": {
+    "MaxFloors": 163,
+    "MaxElevators": 10,
+    "ElevatorCapacities": {
+      "Passenger": 10,
+      "HighSpeed": 8,
+      "Freight": 20
+    },
+    "ElevatorSpeeds": {
+      "Passenger": 1000,
+      "HighSpeed": 1700,
+      "Freight": 750
+    }
+  }
+}
+```
 
-   - Each elevator has a maximum capacity. Passengers are only assigned to elevators with available space.
+Users are free to **edit this file** to match the building and elevator configuration they want to simulate.
 
-3. **Unit Tests**:
+---
 
-   - Comprehensive unit tests ensure the reliability of the simulation logic.
-   - Tests cover elevator behavior, capacity checks, and destination queuing.
+## 🔬 Key Features
 
-4. **GitHub Actions**:
-   - A CI/CD pipeline is set up to build and test the application on every push.
+### 1. Asynchronous Elevator Management
+
+- Elevators process destinations asynchronously using `Channel<DestinationDetails>` for efficient and thread-safe task queuing.
+- Real-time updates are displayed using **Spectre.Console**.
+
+### 2. Capacity and Speed Management
+
+- Each elevator type has configurable:
+  - **Capacity** (number of passengers).
+  - **Speed** (milliseconds per floor).
+- These are loaded from `appsettings.json`, making the simulation adaptable to different building types.
+
+### 3. Configuration via `IOptions`
+
+- `ElevatorSettings` is strongly typed and injected using the **Options pattern**, ensuring clean separation between configuration and business logic.
+
+### 4. Unit Tests
+
+- Comprehensive unit tests cover elevator behavior, capacity checks, and destination queuing.
+- Tests are written using **xUnit**, with help from **Shouldly**, **Bogus**, and **FakeItEasy**.
+
+### 5. GitHub Actions CI/CD
+
+- Every push triggers an automated **build** and **test run** via **GitHub Actions**.
 
 ---
 
@@ -97,6 +136,8 @@ To run the unit tests, navigate to the root of the repository and execute:
 dotnet test
 ```
 
+---
+
 ## 📂 Project Structure
 
 ElevatorSimulator (Main Project)
@@ -104,48 +145,36 @@ ElevatorSimulator (Main Project)
 ```
 ElevatorSimulator/
 ├── Program.cs                  # Entry point for the application
-├── Enums/                      # Contains enums (e.g., Direction)
-├── Mappers/                    # Contains mapping logic (if applicable)
-├── Models/                     # Contains Elevator, Passenger, and other models
-├── Presentation/               # Contains UI-related classes (e.g., menus, prompts)
-└── Services/                   # Contains ElevatorService and other services
+├── appsettings.json             # Contains configurable elevator and building settings
+├── Enums/                       # Contains enums (e.g., Direction)
+├── Mappers/                     # Contains mapping logic (if applicable)
+├── Models/                      # Contains Elevator, Passenger, and other models
+├── Presentation/                # Contains UI-related classes (e.g., menus, prompts)
+└── Services/                    # Contains ElevatorService and other services
 ```
 
 ElevatorSimulator.Tests (Test Project)
 
 ```
 ElevatorSimulator.Tests/
-├── Enums/                      # Tests for enums
-├── Mappers/                    # Tests for mapping logic
-├── Models/                     # Tests for Elevator, Passenger, and other models
-├── Presentation/               # Tests for UI-related classes
-└── Services/                   # Tests for ElevatorService and other services
+├── Enums/                       # Tests for enums
+├── Mappers/                     # Tests for mapping logic
+├── Models/                      # Tests for Elevator, Passenger, and other models
+├── Presentation/                # Tests for UI-related classes
+└── Services/                    # Tests for ElevatorService and other services
 ```
 
-## Assumptions
+---
 
-1. **Passengers are all going to the same destination**:
+## ⚠️ Known Shortcuts and Future Work
 
-   - All passengers in a single pickup request share the same destination floor. This simplifies the destination queuing logic and ensures that the elevator only needs to make one stop for the entire group.
+In the interest of time, a few design shortcuts were taken:
 
-2. **Elevators have a fixed maximum capacity**:
+- **Elevator Types**: The handling of different elevator types (Passenger, HighSpeed, Freight) could be improved, I didn't like the ElevatorType constructor parameter. This would make type-specific logic cleaner.
+- **Code Coverage Report**: Reviewing the code coverage report showed a few gaps in test coverage. Adding tests for edge cases (like elevators being full or handling simultaneous requests) would improve overall confidence.
+- **Settings Validation**: Adding a configuration validation step would ensure that invalid configurations (negative floors, zero capacity elevators) are caught at startup.
 
-   - Each elevator can carry a maximum number of passengers, defined by its `Capacity` property. Passengers are only assigned to elevators with sufficient space.
-
-3. **Elevators prioritize stationary and same-direction requests**:
-
-   - The system first looks for stationary elevators. If none are available, it looks for elevators moving in the same direction as the passenger's request.
-
-4. **Real-time updates are displayed using Spectre.Console**:
-
-   - The UI is handled by Spectre.Console, providing a clean and interactive console experience.
-
-5. **Asynchronous processing with `Channel<T>`**:
-
-   - Elevators process destinations asynchronously using `Channel<T>`, ensuring efficient and thread-safe task queuing.
-
-6. **Unit tests cover core functionality**:
-   - The application includes comprehensive unit tests using xUnit, Shouldly, Bogus, and FakeItEasy to ensure reliability and correctness.
+These are all **opportunities for future improvement**, and contributions in these areas are welcome!
 
 ---
 
@@ -177,3 +206,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 Enjoy managing your elevators and optimizing passenger flow in **Elevator Tycoon**! If you have any questions or feedback, feel free to open an issue or reach out.
 
 Happy coding! 🎉
+
+---

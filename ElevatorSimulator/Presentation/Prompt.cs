@@ -18,7 +18,7 @@
         public static class Validation
         {
             // Number of Floors
-            public const string NumberOfFloorsTooHigh = "[red]The Burj Khalifa only has 163, let's try and keep things realistic. Please enter a value less than 163.[/]";
+            public const string NumberOfFloorsTooHigh = "[red]The Burj Khalifa only has 163, let's try and keep things realistic. Please enter a value less than 163. This can be edited in appsetting.json file[/]";
             public const string NumberOfFloorsTooLow = "[red]We don't support basements just yet. Please enter a positive value.[/]";
 
             // Number Of Elevators
